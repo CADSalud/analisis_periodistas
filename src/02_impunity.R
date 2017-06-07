@@ -7,9 +7,7 @@ library(RColorBrewer)
 theme_set(theme_bw())
 theme_update(plot.title = element_text(hjust = 0.5))
 
-load("cache/tab.motive.RData")
 head(tab.motive)
-
 tab.motive %>% head
 tab.motive %>% names
 

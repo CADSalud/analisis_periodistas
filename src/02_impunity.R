@@ -121,6 +121,36 @@ ggsave(filename = "graphs/impunity/imp_ca_cuatri_total.png", width = 7,height = 
 
 
 
+# ......................................... #
+
+# Asociación de país total a partir de 2006
+tt <- tab.motive %>% 
+  filter(year >= 2006) %>% 
+  mutate(country_killed_c = fct_lump(country_killed, n = 20)) %>% 
+  group_by(impunity, country_killed_c) %>% 
+  summarise(n = n_distinct(name))
+tt$country_killed_c %>% table
+
+tab <- tt %>% 
+  filter(country_killed_c != "Other") %>% 
+  spread(impunity, n, fill = 0) %>% 
+  data.frame(check.names = F)
+row.names(tab) <- tab$country_killed_c
+
+ca.fit <- CA(tab[, -1], graph = F)
+summary(ca.fit, nb.dec = 2, ncp = 2)
+
+ggCA(ca.fit = ca.fit, var.size = 7, col.size = 4) +
+  ggtitle("México está asociado a la impunidad total-parcial", 
+          "Asociación de impunidad por país desde 2006") + 
+  theme(legend.position = "none", 
+        axis.title = element_blank(),
+        axis.text  = element_blank(),
+        axis.ticks = element_blank() )
+ggsave(filename = "graphs/impunity/imp_ca_cuatri_total.png", width = 7,height = 6)
+
+
+
 
 
 # ......................................... #

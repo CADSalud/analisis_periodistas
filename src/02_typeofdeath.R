@@ -1,5 +1,5 @@
 library(ProjectTemplate)
-load.project()
+reload.project()
 
 library(FactoMineR)
 library(RColorBrewer)
@@ -106,7 +106,7 @@ ggCA_year <- function(sub){
   ca.fit <- CA(tab.ca[, apply(tab.ca, 2, sum) > 0], graph = F)
   # summary(ca.fit, nb.dec = 2, ncp = 2)
   ggCA(ca.fit) +
-    ggtitle("Mexico asociado a asesinatos",
+    ggtitle("En México la muerte de periodistas se asocia a asesinatos,\nsimilar a Colombia y Filipinas",
             paste("Asociación de tipo de muerte por paises en ", 
                   unique(sub$periodo))) + 
     theme(legend.position = "none") 

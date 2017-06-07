@@ -132,7 +132,7 @@ tt %>%
         legend.position = "none") + 
   ggtitle("Grupos criminales y fuente desconocida como\n principal fuente de fuego",
           subtitle = "Proporción de asesinatos por fuente de fuego en México")
-ggsave("graphs/03_prop_sourcefire_mex.png", width = 5, height = 6)
+ggsave("graphs/03_prop_sourcefire_mex.png", width = 5, height = 5)
 
 
 
@@ -155,10 +155,10 @@ tab.motive %>%
   scale_alpha_continuous(range = c(.6, 1)) +
   ylab("número de asesinatos") + 
   xlab("año") +
-  ggtitle("Número de muertes aumenta en 2004",
-          subtitle = paste("Global: total", 
-                           n_distinct(tab.motive$name), 
-                           "muertes.") ) +
+  ggtitle( paste("Hasta mayo de 2017 se han registrado", 
+                 n_distinct(tab.motive$name), 
+                 "\nmuertes con motivo conocido en el mundo"),
+          "Número de muertes global por año.") +
   theme(legend.position = "none")
 ggsave("graphs/01_ww_trend.png", width = 5.5, height = 4)
 
@@ -181,10 +181,10 @@ tab.motive %>%
   scale_alpha_continuous(range = c(.4, .8)) +
   ylab("número de asesinatos") + 
   xlab("año") +
-  ggtitle("Número de muertes en 2017 hasta mayo es mayor\nque cualquier otro año",
-          subtitle = paste("México: total", 
-                           n_distinct( filter(tab.motive, country_killed == "mexico")$name), 
-                           "muertes.") ) +
+  ggtitle(paste("En México hay un total de", 
+                n_distinct( filter(tab.motive, country_killed == "mexico")$name), 
+                "muertes, pero\nen 2017 se observa un incremento importante"),
+          "Número de muertes en México por año.") +
   theme(legend.position = "none")
 ggsave("graphs/01_mex_trend.png", width = 5, height = 4)
 

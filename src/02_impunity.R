@@ -155,6 +155,54 @@ ggsave(filename = "graphs/impunity/imp_ca_cuatri_total.png", width = 7,height = 
 
 # ......................................... #
 
+# Asociación de pais por decada
+tt <- tab.motive %>% 
+  filter(!is.na(year)) %>%
+  mutate(periodo = cut(year, breaks = c(1992, 2005, 2017),
+                       include.lowest = T,
+                       dig.lab = 5)) %>%
+  mutate(country_killed_c = fct_lump(country_killed, n = 20)) %>% 
+  group_by(impunity, country_killed_c, periodo) %>% 
+  summarise(n = n_distinct(name))
+
+tab <- tt %>% 
+  filter(country_killed_c != "Other") %>% 
+  spread(impunity, n, fill = 0) %>% 
+  data.frame(check.names = F)
+
+ggCA_year <- function(sub){
+  # sub <- tab %>% filter(cuatrienio == "[1992,1996]")
+  sub <- sub %>% data.frame(check.names = F)
+  row.names(sub) <- sub$country_killed_c
+  tab.ca <- sub[, c(-1,-2)]
+  ca.fit <- CA(tab.ca, graph = F)
+  # summary(ca.fit, nb.dec = 2, ncp = 2)
+  ggCA(ca.fit) +
+    ggtitle("Mexico asociado a la impunidad similar a\nColombia y Filipinas",
+            paste("Asociación de impunidad por paises en ", 
+                  unique(sub$periodo))) +
+    theme(legend.position = "none", 
+          axis.title = element_blank(),
+          axis.text  = element_blank(),
+          axis.ticks = element_blank() )
+}
+
+ggca.tib <- tab %>% 
+  group_by(periodo) %>% 
+  do(ggca = ggCA_year(.))
+ggca.tib$ggca
+
+sapply(1:nrow(ggca.tib), function(num){
+  ggsave(filename = paste0("graphs/impunity/imp_ca_periodo_", num, ".png"),
+         plot = ggca.tib$ggca[[num]], width = 7,height = 6)
+  "fin"
+})
+
+
+
+
+# ......................................... #
+
 # Asociación de pais por cuatrienio
 tt <- tab.motive %>% 
   mutate(country_killed_c = fct_lump(country_killed, n = 20)) %>% 

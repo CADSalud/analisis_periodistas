@@ -114,6 +114,7 @@ ggCA(ca.fit, col.size = 4) +
         axis.text  = element_blank(),
         axis.ticks = element_blank() )
 ggsave("graphs/sourcefire/source_impunity_mex.png", width = 6, height = 5)
+ggsave("graphs/sourcefire/source_impunity_mex.pdf", width = 6, height = 5)
 
 
 
@@ -131,7 +132,7 @@ tt <- tab.motive %>%
   data.frame(check.names = F)
 
 row.names(tt) <- tt$source_fire_c
-ca.fit <- CA(tt[, -1], graph = F)
+ca.fit <- CA(tt[, c(-1, -5)], graph = F)
 ggCA(ca.fit, var.size = 6, col.size = 5) + 
   ggtitle("Asesinato asociado a grupos criminales,\nlocales y oficiales de gobierno",
           "Asociación entre tipo de muerte y fuente de fuego") + 

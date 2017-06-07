@@ -8,7 +8,7 @@ output: html_document
 
 Fuente: Journalists Killed since 1992 <https://cpj.org/>
 
-Por: Centro de Análisis de Datos CAD 
+Por: Centro de Análisis de Datos [CAD](https://github.com/Songeo/analisis_periodistas.git)
 
 ---
 
@@ -30,20 +30,24 @@ load("../cache/tab.motive.RData")
 ```
 
 
-## ¿Cuántos han muerto?
+## ¿Cuántos han muerto en el mundo?
 
-En total hay 1212 periodistas asesinados desde 1992. 
-En 2004 hubo un repunte en la agresión a periodistas
-con niveles máximos en 2008 más de 70 periodistas asesinados. 
 
 ```{r, out.width='100%'}
 knitr::include_graphics("../graphs/01_ww_trend.png")
 ```
 
+## ¿Y en México?
+
+
+```{r, out.width='100%'}
+knitr::include_graphics("../graphs/01_mex_trend.png")
+```
+
 
 ----
 
-## ¿Cómo se ve por país?
+## ¿Dónde está México?
 
 
 ```{r}
@@ -51,7 +55,7 @@ knitr::include_graphics("../graphs/02_top15_pais.png")
 ```
 
 
-```{r, out.width='100%'}
+```{r, out.width='100%', eval=F}
 knitr::include_graphics("../graphs/mapas_eda/mapa_tot.png")
 ```
 
@@ -61,75 +65,54 @@ knitr::include_graphics("../graphs/mapas_eda/mapa_tot.png")
 
 
 
-## ¿Qué está pasando?
-
-
+## ¿Porqué se mueren?
 
 ```{r}
 knitr::include_graphics("../graphs/03_prop_typedeath.png")
 ```
 
 
-```{r}
-knitr::include_graphics("../graphs/03_prop_sourcefire.png")
+### ¿Tipo de Muerte?
+
+```{r, out.width='100%'}
+knitr::include_graphics("../graphs/typeofdeath/typed_ca_periodo_2.png")
 ```
+
+
+
+### ¿Fuente de Fuego?
+
+```{r, out.width='100%'}
+knitr::include_graphics("../graphs/sourcefire/source_ca_periodo_2.png")
+```
+
+
+
+### ¿Impunidad?
 
 
 ```{r, out.width='100%'}
-knitr::include_graphics("../graphs/sourcefire/source_typefire_tot.png")
+knitr::include_graphics("../graphs/impunity/imp_ca_periodo_2.png")
 ```
 
 
-
-
-## ¿Se hizo algo?
-
-
-```{r, out.width='100%'}
-knitr::include_graphics("../graphs/sourcefire/source_impunity_tot.png")
-```
-
-
-Monitoreo realizado por CPJ sobre el cumplimiento de la ley y el proceso legal para los casos de asesinato confirmado. Tiene tres niveles: yes, no, partial. 
-El nivel *partial* se refiere a cuando algunos responsables son 
+Monitoreo realizado por CPJ sobre el cumplimiento de la ley y el proceso legal para los casos de asesinato confirmado. Tiene tres niveles: impunidad, sin impunidad, parcial y sin información. 
+El nivel *parcial* se refiere a cuando algunos responsables son 
 condenados pero no la totalidad.
 
 
-
-
-
-
-
-
-
-----
-
-## ¿Cambia el tipo de muerte por país?
+## ¿Quiénes están matando periodistas en México?
 
 ```{r, out.width='100%'}
-knitr::include_graphics("../graphs/typeofdeath/ca_cuatri_total.png")
+knitr::include_graphics("../graphs/03_prop_sourcefire_mex.png")
 ```
 
 
 
-----
-
-## ¿Hay impunidad por país?
+## ¿Quienes salen impunes en México?
 
 ```{r, out.width='100%'}
-knitr::include_graphics("../graphs/impunity/imp_ca_cuatri_total.png")
-```
-
-
-
-
-----
-
-## ¿Cómo se ve México?
-
-
-```{r, out.width='100%'}
-knitr::include_graphics("../graphs/sourcefire/source_typefire_mex.png")
+knitr::include_graphics("../graphs/sourcefire/source_impunity_mex.png")
 ```
 
 

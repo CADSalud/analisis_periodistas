@@ -208,8 +208,8 @@ ggCA_year <- function(sub){
   ca.fit <- CA(tab.ca, graph = F)
   
   ggCA(ca.fit, var.size = 5, country = T) +
-    ggtitle("",
-            paste("Asosciación de fuente de fuego y paises ",
+    ggtitle("El asesinato de periodistas en México es\nasociado a grupos criminales",
+            paste("Asosciación de fuente de fuego y paises en ",
                   unique(sub$periodo))) +
     theme(legend.position = "none", 
           axis.title = element_blank(),

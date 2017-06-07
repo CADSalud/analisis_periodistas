@@ -10,11 +10,6 @@ theme_update(plot.title = element_text(hjust = 0.5))
 load("cache/tab.motive.RData")
 head(tab.motive)
 
-tab.motive <- tab.motive %>% 
-  rename(impunity = `Impunity (for Murder)`,
-         type_death = `Type of Death`,
-         source_fire = `Source of Fire`) %>% 
-  mutate(impunity = fct_explicit_na(factor(impunity), "na"))
 tab.motive %>% head
 tab.motive %>% names
 
@@ -30,28 +25,29 @@ ggCA <- function(ca.fit, var.size = 5, col.size = 3){
     rownames_to_column("renglon") %>% 
     mutate(col.color = ifelse(renglon == "mexico", "1.mex", "2.no mex"))
   
-  pal.man <- brewer.pal(4, "Set2")
+  pal <- wes_palette(4, name = "GrandBudapest")
   
   ggplot(data = mca1_obs_df, 
          aes(x = Dim.1, y = Dim.2)) + 
-    geom_hline(yintercept = 0, colour = "gray70") + 
-    geom_vline(xintercept = 0, colour = "gray70") + 
     geom_point(colour = "gray50", alpha = 0.7) + 
     # geom_density2d(colour = "gray80") +
     geom_text(aes(label = renglon,
                   color= col.color,
                   size= col.color),
-              # size = col.size, 
               nudge_x = .05, nudge_y = .05, 
-              # color = "gray50", 
               alpha = .7) + 
-    scale_size_manual(values = c(4, 3)) +
-    geom_text(data = mca1_vars_df, 
-              fontface = "bold", size = var.size,
-              aes(x = Dim.1, y = Dim.2, label = columna, 
+    scale_size_manual(values = c(6, 4.5)) +
+    geom_point(data = mca1_vars_df, 
+              size = 3,
+              aes(x = Dim.1, y = Dim.2, 
                   colour = columna)) +
-    scale_color_manual(values = c("gray20", "gray50", 
-                                  brewer.pal(4, "Set2")))
+    geom_text(data = mca1_vars_df, 
+              fontface = "bold", 
+              size = var.size,
+              aes(x = Dim.1, y = Dim.2, 
+                  label = columna, 
+                  colour = columna)) +
+    scale_color_manual(values = c("gray20", "gray50", pal))
 }
 
 
@@ -76,7 +72,7 @@ CA(tt[, -1], graph = F)
 # Total
 tab.motive %>% 
   group_by(impunity) %>% 
-  summarise(n = n_distinct(Name)) %>% 
+  summarise(n = n_distinct(name)) %>% 
   ggplot(aes( x = fct_reorder(impunity, n) , y = n)) +
   geom_bar(stat = "identity", alpha = .7) +
   coord_flip() + 
@@ -86,9 +82,10 @@ tab.motive %>%
 
 
 tab.motive %>% 
-  filter(year < 2017) %>% 
+  # filter(year < 2017) %>% 
+  filter(country_killed == "mexico") %>% 
   group_by(impunity, year) %>% 
-  summarise(n = n_distinct(Name)) %>% 
+  summarise(n = n_distinct(name)) %>% 
   ggplot(aes( x= year, y = n, color = impunity))+
   geom_line(alpha = .5)+
   geom_smooth(se = F, 
@@ -104,20 +101,24 @@ tab.motive %>%
 tt <- tab.motive %>% 
   mutate(country_killed_c = fct_lump(country_killed, n = 20)) %>% 
   group_by(impunity, country_killed_c) %>% 
-  summarise(n = n_distinct(Name))
+  summarise(n = n_distinct(name))
 tt$country_killed_c %>% table
 tab <- tt %>% 
   filter(country_killed_c != "Other") %>% 
   spread(impunity, n, fill = 0) %>% 
-  data.frame()
+  data.frame(check.names = F)
 row.names(tab) <- tab$country_killed_c
 
 ca.fit <- CA(tab[, -1], graph = F)
 summary(ca.fit, nb.dec = 2, ncp = 2)
 
-ggCA(ca.fit, var.size = 7) +
-  ggtitle("Impunidad") + 
-  theme(legend.position = "none")
+ggCA(ca.fit = ca.fit, var.size = 7, col.size = 4) +
+  ggtitle("México está asociado a la impunidad total-parcial", 
+          "Asociación de impunidad por país desde 1992.") + 
+  theme(legend.position = "none", 
+        axis.title = element_blank(),
+        axis.text  = element_blank(),
+        axis.ticks = element_blank() )
 ggsave(filename = "graphs/impunity/imp_ca_cuatri_total.png", width = 7,height = 6)
 
 
@@ -128,27 +129,30 @@ ggsave(filename = "graphs/impunity/imp_ca_cuatri_total.png", width = 7,height = 
 
 # Asociación de pais por cuatrienio
 tt <- tab.motive %>% 
-  mutate(country_killed_c = fct_lump(country_killed, n = 30)) %>% 
+  mutate(country_killed_c = fct_lump(country_killed, n = 20)) %>% 
   filter(year < 2017) %>% 
   group_by(impunity, country_killed_c, cuatrienio) %>% 
-  summarise(n = n_distinct(Name))
+  summarise(n = n_distinct(name))
 
 tab <- tt %>% 
   filter(country_killed_c != "Other") %>% 
   spread(impunity, n, fill = 0) %>% 
-  data.frame()
+  data.frame(check.names = F)
 
 ggCA_year <- function(sub){
   # sub <- tab %>% filter(cuatrienio == "[1992,1996]")
-  sub <- sub %>% data.frame()
+  sub <- sub %>% data.frame(check.names = F)
   row.names(sub) <- sub$country_killed_c
   tab.ca <- sub[, c(-1,-2)]
   ca.fit <- CA(tab.ca, graph = F)
   # summary(ca.fit, nb.dec = 2, ncp = 2)
   ggCA(ca.fit) +
-    ggtitle(paste("Impunidad\n", 
-                  unique(sub$cuatrienio))) + 
-    theme(legend.position = "none") 
+    ggtitle(paste("Impunidad por País\n", 
+                  unique(sub$cuatrienio))) +
+    theme(legend.position = "none", 
+          axis.title = element_blank(),
+          axis.text  = element_blank(),
+          axis.ticks = element_blank() )
 }
 
 ggca.tib <- tab %>% 

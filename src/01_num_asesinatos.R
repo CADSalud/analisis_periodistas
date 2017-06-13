@@ -141,15 +141,27 @@ ggsave("graphs/03_prop_sourcefire_mex.png", width = 5, height = 5)
 
 # ......................................... #
 # Muertes global por año
-tab.motive %>%
+tab <- tab.motive %>%
   group_by(year) %>% 
   # tally %>% 
   summarise(n = n_distinct(name)) %>% 
+  ungroup 
+
+tab.preds <- tab %>% 
+  filter(year < 2017) 
+mod <- loess(formula = n~year, data = tab.preds)
+tab.preds$fit <- mod$fitted
+
+tab %>% 
+  left_join(
+    tab.preds %>% 
+      dplyr::select(-n)
+    ) %>% 
   ggplot(aes(x = year, y = n)) + 
   geom_bar(stat = "identity", aes(alpha = n,
                                   fill = n)) + 
-  geom_smooth(se = F, color = "#800000", 
-              method = "loess", size = 2) + 
+  geom_line(aes(y = fit), color = "#800000",
+              method = "loess", size = 2) +
   scale_x_continuous(breaks = seq(1993, 2017, by = 2) ) + 
   scale_fill_continuous(low = "#c0e7e3", high = "#416863") + 
   scale_alpha_continuous(range = c(.6, 1)) +
@@ -157,25 +169,38 @@ tab.motive %>%
   xlab("año") +
   ggtitle( paste("Hasta mayo de 2017 se han registrado", 
                  n_distinct(tab.motive$name), 
-                 "\nmuertes con motivo conocido en el mundo"),
-          "Número de muertes global por año.") +
+                 "asesinatos\nde periodistas con motivo conocido en el mundo"),
+          "Número global por año de periodistas asesinados con motivo confirmado.") +
   theme(legend.position = "none")
-ggsave("graphs/01_ww_trend.png", width = 5.5, height = 4)
+ ggsave("graphs/01_ww_trend.png", width = 5.5, height = 4)
 
 
 
 # ......................................... #
 # Muertes mexico por año
-tab.motive %>%
+
+tab <- tab.motive %>%
   filter(country_killed == "mexico") %>% 
   group_by(year) %>% 
   # tally %>% 
   summarise(n = n_distinct(name)) %>% 
+  ungroup 
+
+tab.preds <- tab %>% 
+  filter(year < 2017) 
+mod <- loess(formula = n~year, data = tab.preds)
+tab.preds$fit <- mod$fitted
+
+tab %>% 
+  left_join(
+    tab.preds %>% 
+      dplyr::select(-n)
+  ) %>% 
   ggplot(aes(x = year, y = n)) + 
   geom_bar(stat = "identity", aes(alpha = n,
                                   fill = n)) + 
-  geom_smooth(se = F, color = "#800000", 
-              method = "loess", size = 2) + 
+  geom_line(aes(y = fit), color = "#800000",
+            method = "loess", size = 2) +
   scale_x_continuous(breaks = seq(1993, 2017, by = 2) ) + 
   scale_fill_continuous(low = "#c0e7e3", high = "#416863") + 
   scale_alpha_continuous(range = c(.4, .8)) +
